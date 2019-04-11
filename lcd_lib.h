@@ -5,10 +5,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#define FILENAME "/dev/framebuf"
 #include "lcd_ioctl.h"
 
-#define FILENAME		"/dev/framebuf"
 
 extern void draw_string(char *str, Pixel_t color, FontSize_t font);
 extern int open_file();
