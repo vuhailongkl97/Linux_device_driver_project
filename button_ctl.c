@@ -24,7 +24,8 @@ MODULE_AUTHOR("Longvh12@fsoft.com.vn");
 MODULE_DESCRIPTION("keyboard for snake ");
 MODULE_VERSION("0.1");
 
-static unsigned int gpioButton[4] = {44, 26, 46, 65};
+//static unsigned int gpioButton[4] = {44, 26, 46, 65};
+static unsigned int gpioButton[4] = {67,68,44, 26};
 /* up down left right */
 static unsigned int irqNumber[4];
 
@@ -103,7 +104,7 @@ static int __init button_init(void)
 
 		result = request_irq(irqNumber[i],
 				(irq_handler_t) button_irq_handler,
-				IRQF_TRIGGER_FALLING,
+				IRQF_TRIGGER_RISING,
 				"ebb_gpio_handler",
 				NULL);
  
@@ -163,6 +164,7 @@ static irq_handler_t button_irq_handler(unsigned int irq, void *dev_id,
 {
 	pr_info("GPIO_TEST %d: Interrupt! \n", irq);
 
+	pr_info("button %d", button_status);
 	if (irq == irqNumber[0]) {
 		button_status = 1;
 		send_sig_to_user(button_status);

@@ -23,7 +23,8 @@
 #define HEIGHT_FOOD  3
 
 static int speed = 10;
-enum direction_t {zeros, up , down ,left ,right};
+//enum direction_t {zeros, up , down ,left ,right};
+enum direction_t {zeros, right , left ,up , down};
 static int direction = 0;
 struct snake {
 	int head ;

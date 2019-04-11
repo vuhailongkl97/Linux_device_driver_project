@@ -13,8 +13,8 @@
 #define LCD_CLK			    66	
 #define LCD_DIN			    69	
 
-#define LCD_RST_PIN		    45	
-#define LCD_DC_PIN		    47	
+#define LCD_RST_PIN		    47	
+#define LCD_DC_PIN		    45	
 
 #define LCD_WIDTH			84
 #define LCD_HEIGHT			48
