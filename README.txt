@@ -1,6 +1,6 @@
 1. Build
-in 'last_course_linux' directory run make. (this will build out button_ctl.ko, lcd_driver.ko,
-and snake binary file in user_main folder).
+In 'last_course_linux' directory run make. (this will build out button_ctl.ko, lcd_driver.ko,
+in driver folder and snake binary file in user_main folder).
 
 2. run
 - insmod lcd_driver.ko

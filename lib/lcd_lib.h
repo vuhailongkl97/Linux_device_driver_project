@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../lcd_ioctl.h"
+#include "../driver/lcd_ioctl.h"
 
 #define FILENAME		"/dev/framebuf"
 

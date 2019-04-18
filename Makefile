@@ -1,13 +1,15 @@
-obj-m := lcd_driver.o
-lcd_driver-objs := lcd_ctrl.o lcd_5110.o
+DRIVER_DIR = ./driver
+LIB_DIR = ./lib
+USER_DIR = ./user_main
 
-obj-m += button_ctl.o
+export DIR=$(PWD)
 
 all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-	make -C lib/
-	make -C user_main/
+	make -C $(DRIVER_DIR)
+	make -C $(LIB_DIR)
+	make -C $(USER_DIR)
+
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
-	make -C lib/ clean
-	make -C user_main/ clean
+	make -C $(DRIVER_DIR) clean
+	make -C $(LIB_DIR) clean
+	make -C $(USER_DIR) clean
