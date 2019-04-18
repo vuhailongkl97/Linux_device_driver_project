@@ -24,8 +24,8 @@ MODULE_AUTHOR("Longvh12@fsoft.com.vn");
 MODULE_DESCRIPTION("keyboard for snake ");
 MODULE_VERSION("0.1");
 
-//static unsigned int gpioButton[4] = {44, 26, 46, 65};
-static unsigned int gpioButton[4] = {67,68,44, 26};
+static unsigned int gpioButton[4] = {44, 26, 46, 65};
+//static unsigned int gpioButton[4] = {67,68,44, 26};
 /* up down left right */
 static unsigned int irqNumber[4];
 

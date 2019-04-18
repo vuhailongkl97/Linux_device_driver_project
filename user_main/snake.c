@@ -24,8 +24,9 @@
 
 static int speed = 10;
 //enum direction_t {zeros, up , down ,left ,right};
-enum direction_t {zeros, right , left ,up , down};
+enum direction_t {zeros, down, up, left, right};
 static int direction = 0;
+
 struct snake {
 	int head ;
 	int current_length;
