@@ -1,0 +1,21 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "ti,beaglebone", "ti,beaglebone-black";
+
+    fragment@0 {
+        target-path="/ocp/i2c@4819c000";
+        __overlay__ {
+             status = "okay";
+	mpu@68 {
+		compatible = "hehe,longvh";
+                #address-cells = <0x1>;
+	        #size-cells = <0x1>;
+		reg = <0x68>;
+		status = "okay";	
+		 };
+	};
+    };
+};
+

@@ -8,6 +8,8 @@ CC=gcc
 
 all:
 	$(CC) test_lcd.c -o $(TARGET) $(CFLAGS) $(LDFLAGS)
+	$(CC) logo.c -o ltest $(CFLAGS) $(LDFLAGS)
+
 
 clean:
 	rm $(TARGET) 

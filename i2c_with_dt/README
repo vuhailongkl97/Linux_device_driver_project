@@ -1,0 +1,16 @@
+0. introduction
+	+ Example using device tree overlay to change dtb 
+	+_this example can update a node ( compatible , status, other attribute)
+	+ kick to probe run with new compatible	 and get resource in probe function
+
+1. change file .dts for your project 
+	( change pinmux, node, compatible, status,.. ) 
+
+2. run "sudo ./build_dts_overlay.sh"
+
+3. run "make"
+
+4. run "sudo insmod main.ko"
+
+5. dmesg check log  
+

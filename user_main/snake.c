@@ -9,11 +9,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <math.h>
 
 #include "lcd_lib.h"
 
 #define MY_SIGNAL		40
-#define FILENAME_B		"/dev/buttons"
 
 #define MAX_LENGTH 100
 #define MAX_WIDTH  84 
@@ -21,6 +21,14 @@
 #define THICK      3
 #define WIDTH_FOOD  3
 #define HEIGHT_FOOD  3
+
+#define mpu_file "/dev/mpu6050"
+
+struct mpu_xyz {
+	int x;
+	int y;
+	int z;
+};
 
 static int speed = 10;
 //enum direction_t {zeros, up , down ,left ,right};
@@ -42,6 +50,50 @@ struct food {
 };
 void draw_score(struct snake s);
 void init(struct snake *s);
+void *thread_read_file(void *ar) {
+	struct mpu_xyz mpu;
+	int x ,y, z, pitch, roll;
+	FILE *fp = NULL;
+	float range_per_digit = .000061f;
+	while(1) { 
+			fp = fopen(mpu_file,"r");
+			if (fp == NULL) {
+				perror("fopen");
+				//return NULL;
+			}
+			else {
+				fread(&mpu, sizeof(struct mpu_xyz), 1, fp);		
+				x = mpu.x * range_per_digit * 9.80665f ;
+				y = mpu.y * range_per_digit * 9.80665f;
+				z = mpu.z * range_per_digit * 9.80665f;
+				pitch = -(atan2(x, sqrt(y*y + z*z))*180.0)/M_PI;
+				roll = (atan2(y, z)*180.0)/M_PI;	
+				//printf("x :%8d y :%8d z: %8d\n", x, y, z);
+				if ( pitch < -70 && roll > 15  && roll < 60) {
+					//printf("right\n");
+					direction = right;
+				}
+				else if( pitch  < -40 && roll > 70) {
+				//	printf("left\n");
+					direction= left;
+				}
+				else if( pitch  < -70 && roll < 20) {
+					//printf("up\n");
+					direction = up;
+				}
+				else if( pitch   > -45 && roll < 10) {
+					//printf("down\n");
+					direction = down;
+				}
+				else {
+				//	printf("pitch :%5d roll :%5d\n", pitch, roll);
+				}
+			}
+			fclose(fp);
+			usleep(25000);
+		}	
+	return NULL;
+}
 void create_new_food(struct snake s, struct food *f){
 	int fx,fy,i, j, t =0;	
 
@@ -370,35 +422,6 @@ void snake_move(struct snake *s , int d ,struct food *f) {
 
 }
 
-void *thread_read_file(void *argv) {
-	char buf[10];
-	char c;
-
-	while(1) {
-		FILE *fp = fopen("/dev/buttons","r");
-		fgets(buf,10,fp);
-		direction = atoi(buf);
-		fclose(fp);
-		usleep(100);
-	}
-}
-
-void *thread_control_snake(void *argv) {
-	int i = 0;	
-	struct snake my_snake;
-	
-	init(&my_snake);
-	draw_snake(my_snake);
-	lcd_send_buff();
-	sleep(3);
-	lcd_clear_screen();
-
-	while (1) {
-		draw_snake(my_snake);
-		lcd_send_buff();
-		usleep(speed*1000);
-	}	
-}
 void draw_score(struct snake s){
 	char buf[10];
 	lcd_gotoxy(65,40);		
@@ -406,11 +429,30 @@ void draw_score(struct snake s){
 	draw_string(buf,Pixel_Set ,FontSize_5x7);
 	
 }
-int main(int argc , char *argv[]) {
-	struct sigaction sig;
-	int fd;
+void *thread_control(void *ar) {
 	struct snake my_snake;
 	struct food my_food;
+
+	lcd_clear_screen();
+	create_new_food(my_snake, &my_food);
+	draw_food(my_food);
+	init(&my_snake);
+	draw_snake(my_snake);
+	lcd_send_buff();
+	sleep(2);
+
+	while (1) {
+		snake_move(&my_snake, direction,&my_food);			
+		draw_snake(my_snake);
+		lcd_send_buff();
+		usleep(speed*1000);
+	}	
+	
+	return NULL;
+}
+int main(int argc , char *argv[]) {
+	struct sigaction sig;
+	pthread_t  tid1,tid2;
 	if( argc == 2 ){
 		speed = atoi(argv[1]);
 		printf("speed : %d\n" ,speed);
@@ -421,29 +463,11 @@ int main(int argc , char *argv[]) {
 	sig.sa_flags = SA_SIGINFO;
 	sigaction(MY_SIGNAL, &sig, NULL);
 
-	fd = open(FILENAME_B, O_RDONLY);
 
-	if (fd < 0) {
-		perror("open: Failed\n");
-		return fd;
-	}
-	close(fd);
-	
-	init(&my_snake);
-	draw_snake(my_snake);
-	lcd_send_buff();
-	sleep(2);
-	lcd_clear_screen();
-	create_new_food(my_snake, &my_food);
-	draw_food(my_food);
+	pthread_create(&tid1, NULL, thread_read_file, NULL);	
+	pthread_create(&tid2, NULL, thread_control, NULL);	
+	pthread_join(tid1, NULL);
+	pthread_join(tid2, NULL);
 
-	while (1) {
-		snake_move(&my_snake, direction,&my_food);			
-		draw_snake(my_snake);
-		lcd_send_buff();
-		usleep(speed*1000);
-	}	
 	return 0;
 }
-
-
