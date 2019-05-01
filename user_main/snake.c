@@ -7,6 +7,7 @@
 #include <time.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
@@ -23,6 +24,7 @@
 #define HEIGHT_FOOD  3
 
 #define mpu_file "/dev/mpu6050"
+#define buzzer_file "/dev/buzzer"
 
 struct mpu_xyz {
 	int x;
@@ -90,7 +92,7 @@ void *thread_read_file(void *ar) {
 				}
 			}
 			fclose(fp);
-			usleep(25000);
+			usleep(20000);
 		}	
 	return NULL;
 }
@@ -210,8 +212,10 @@ void update_snake_arr_pos(struct snake *s) {
 
 void snake_move(struct snake *s , int d ,struct food *f) {
 	static int last_state = 100;
+	int pid; //new_1
 	int del_tail = 1 ;
 	int i = 0,j;		
+	FILE *fp ;
 	int tx[THICK],ty[THICK]; 
 	
 	s->head = d;
@@ -231,6 +235,33 @@ void snake_move(struct snake *s , int d ,struct food *f) {
 	for (i = 0; i < THICK; i++) {
 		for (j =0; j< (WIDTH_FOOD * HEIGHT_FOOD); j++) {
 			if( (f->pos_x[j] == s->arr_x[i][0]) && (f->pos_y[j] == s->arr_y[i][0])) {
+				//need fork() update
+				pid = fork();
+				if (pid < 0) {
+					perror("failt fork\n");
+					exit(-1) ;
+				} 
+				else if (pid == 0 ){
+					pid = fork();	
+					if (pid == 0) {
+						fp = fopen(buzzer_file, "r+");
+						fwrite("1",1,1,fp);
+						fclose(fp);
+						usleep(100000);
+						fp = fopen(buzzer_file, "r+");
+						fwrite("0",1,1,fp);
+						fclose(fp);
+						exit(0);
+					}
+					else if (pid > 0) {
+						exit(0) ;
+					}
+					else {
+						perror("failt fork 2\n");
+						exit(0) ;
+					}
+				}
+				wait(NULL);
 				del_tail = 0;	
 				s->current_length ++;
 				s->arr_x[i][0] = f->pos_x[j];
