@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
+#include <string.h>
 
 #include "lcd_lib.h"
 
@@ -22,6 +23,8 @@
 #define THICK      3
 #define WIDTH_FOOD  3
 #define HEIGHT_FOOD  3
+#define MODE_CONTROL_BUTTON  1
+#define MODE_CONTROL_MPU  2
 
 #define mpu_file "/dev/mpu6050"
 #define buzzer_file "/dev/buzzer"
@@ -483,11 +486,17 @@ void *thread_control(void *ar) {
 }
 int main(int argc , char *argv[]) {
 	struct sigaction sig;
+	int mode_game = MODE_CONTROL_MPU;
 	pthread_t  tid1,tid2;
 	if( argc == 2 ){
 		speed = atoi(argv[1]);
 		printf("speed : %d\n" ,speed);
-	}  
+	}
+	if(argc == 3) {
+		if (strcmp(argv[2],"button") == 0){
+			mode_game = MODE_CONTROL_BUTTON;	
+		}
+	} 
 
 	printf("process id is %d\n", getpid());
 	sig.sa_sigaction = signal_handle;
@@ -496,9 +505,12 @@ int main(int argc , char *argv[]) {
 
 
 	pthread_create(&tid1, NULL, thread_read_file, NULL);	
-	pthread_create(&tid2, NULL, thread_control, NULL);	
+
+	if( mode_game == MODE_CONTROL_BUTTON) {
+		pthread_create(&tid2, NULL, thread_control, NULL);	
+		pthread_join(tid2, NULL);
+	}
 	pthread_join(tid1, NULL);
-	pthread_join(tid2, NULL);
 
 	return 0;
 }

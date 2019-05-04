@@ -2,6 +2,7 @@ obj-m := lcd_driver.o
 lcd_driver-objs := lcd_ctrl.o lcd_5110.o
 
 obj-m += buzzer.o
+obj-m += button_ctl.o
 
 obj-m += mpu_wheel.o
 mpu_wheel-objs += mpu_control.o mpu6050.o
