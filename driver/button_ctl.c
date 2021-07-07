@@ -3,8 +3,8 @@
 ** @This file based on button.c of Derek Molloy and has modified
 ** @to control 4 buttons
 ** @Link: https://github.com/sdwuyawen/BeagleBoneBlack/blob/master/button/button.c
-** @Author: LongVh12@fsoft.com.vn
-** 	    Tungnt58@fsoft.com.vn (Add send signal to userspace functionality)
+** @Author: vuhailongkl97@gmail.com
+** 	    Tungnt58 (Add send signal to userspace functionality)
 */
 
 #include <linux/init.h>
@@ -20,7 +20,7 @@
 #define MY_SIGNAL		40
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Longvh12@fsoft.com.vn");
+MODULE_AUTHOR("vuhailongkl97@gmail.com");
 MODULE_DESCRIPTION("keyboard for snake ");
 MODULE_VERSION("0.1");
 

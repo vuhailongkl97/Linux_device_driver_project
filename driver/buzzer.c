@@ -7,7 +7,7 @@
 #include <linux/uaccess.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Longvh12@fsoft.com.vn");
+MODULE_AUTHOR("vuhailongkl97@gmail.com");
 MODULE_DESCRIPTION("buzzer score");
 MODULE_VERSION("0.1");
 
